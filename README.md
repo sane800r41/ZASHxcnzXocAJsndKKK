@@ -19,5 +19,6 @@ except SkidError:
 creditsTo:
  UserInterface = "@sane800r41"
  Code = "@sane800r41 " + "@Foliowiec"
- Background = "@Foliowiec"
+ BackgroundCoding = "@Foliowiec"
+ ForegroundCoding = "@saneboorai"
 ```
