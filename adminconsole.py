@@ -9,7 +9,7 @@ import art
 from colorama import Fore
 
 PORT = 55555
-IP = "localhost"
+IP = "138.2.151.66"
 FULLADDRESS = (IP, PORT)
 
 ENCODING = 'utf-8'
