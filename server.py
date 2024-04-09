@@ -4,8 +4,8 @@ import threading
 from colorama import Fore
 import base64
 
-PORT = 55555
-IP = "localhost"
+PORT = 0
+IP = "0.0.0.0"
 FULLADDRESS = (IP, PORT)
 
 ENCODING = 'utf-8'
